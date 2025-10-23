@@ -16,6 +16,6 @@
 - **Notes:** Good coverage, some missing critic scores for older titles.
 
 ## Overall Assessment
-✅ Data structure validated, no duplicates.  
-⚠️ Missing metadata in cast/director and Metascore columns.  
-✅ Ready for normalization and integration (Week 7–9).
+Data structure validated, no duplicates.  
+Missing metadata in cast/director and Metascore columns.  
+Ready for normalization and integration (Week 7–9).
