@@ -208,3 +208,10 @@ __marimo__/
 
 # Environment variables
 .env
+
+# Ignore large raw datasets
+data/raw/the-movies-dataset/*
+!data/raw/tmdb_movies_100.csv
+
+# Ignore IMDb gz files if downloaded later
+data/raw/imdb/*
