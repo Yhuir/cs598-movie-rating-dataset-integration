@@ -1,0 +1,6 @@
+requests
+pandas
+tqdm
+python-dotenv
+fuzzywuzzy[speedup]
+beautifulsoup4
