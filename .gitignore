@@ -222,27 +222,30 @@ __pycache__/
 # Jupyter checkpoints
 .ipynb_checkpoints/
 
-# -------------------------------
-# IMDb dataset should ALWAYS be ignored
-# -------------------------------
-data/raw/imdb/**
+# ============================================
+# 1. Ignore ALL raw data (large or licensed)
+# ============================================
+data/raw/
+data/intermediate/
+
+# Explicit IMDb exclusion — NEVER commit IMDb TSV files
+data/raw/imdb/
 data/raw/imdb/*.tsv.gz
 data/raw/imdb/*.csv
+data/raw/imdb/*
 
-# -------------------------------
-# Ignore all data by default
-# -------------------------------
-
-data/*
-data/raw/*
-
-# -------------------------------
-# Allow curated final dataset
-# -------------------------------
+# ============================================
+# 2. Allow curated dataset (safe + required)
+# ============================================
 !data/curated/
-!data/curated/*
+!data/curated/movies_with_scores.csv
 
-data/intermediate/*
-data/curated/movies_with_scores.csv
-data/intermediate/link_candidates.csv
-data/raw/rt_omdb_sample.csv
+# ============================================
+# 3. Allow TMDb sample (safe to commit)
+# ============================================
+!data/raw/tmdb_movies_100.csv
+
+# ============================================
+# 4. Allow OMDb sample (small + derived)
+# ============================================
+!data/raw/rt_omdb_sample.csv
