@@ -7,7 +7,18 @@ API_KEY = os.getenv("OMDB_API_KEY")
 BASE = "http://www.omdbapi.com/"
 
 def fetch_rating(title, retries=5, delay=2):
-    """Fetch OMDb rating with retry logic."""
+    """
+    Fetch OMDb rating with retry logic.
+    
+    Args:
+        title (str): Movie title to search.
+        retries (int): Number of retry attempts.
+        delay (int): Delay between retries in seconds.
+        
+    Returns:
+        dict: OMDb response JSON or None if failed.
+    
+    """
     BASE = "http://www.omdbapi.com/"
 
     params = {
@@ -31,7 +42,7 @@ def fetch_rating(title, retries=5, delay=2):
 
 def main():
     df = pd.read_csv("data/raw/tmdb_movies_100.csv")
-    titles = df["title"].dropna().unique()[:50]  # limit for pilot run
+    titles = df["title"].dropna().unique()[:50]  
     results = []
     for t in tqdm(titles, desc="Fetching OMDb ratings"):
         record = fetch_rating(t)

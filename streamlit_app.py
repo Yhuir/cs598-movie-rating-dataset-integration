@@ -13,9 +13,8 @@ def load_data():
 
 df = load_data()
 
-# ---------------------------
+
 # DATA PREVIEW
-# ---------------------------
 st.subheader("Dataset Preview")
 st.write("Use the slider below to inspect the first few rows of the curated dataset. "
          "This helps you understand the structure of the integrated ratings and metadata.")
@@ -24,9 +23,7 @@ num_rows = st.slider("Number of rows to preview:", 5, len(df), 10)
 st.dataframe(df.head(num_rows))
 
 
-# ---------------------------
 # GENRE HANDLING FIX
-# ---------------------------
 genre_col = None
 for col in df.columns:
     if col.lower() in ["genres", "genre", "tmdb_genres", "genres_tmdb"]:
@@ -46,9 +43,7 @@ else:
     )
 
 
-# ---------------------------
-# CHART 1: IMDb vs RT
-# ---------------------------
+# IMDb vs RT
 st.subheader("IMDb vs Rotten Tomatoes (Normalized Ratings)")
 
 chart = (
@@ -83,15 +78,15 @@ This scatter plot compares *audience ratings* from IMDb with *critic ratings* fr
 """)
 
 
-# ---------------------------
-# CHART 2: GENRE GAP
-# ---------------------------
+
+# GENRE GAP
+
 st.subheader("Critic–Audience Rating Gap by Genre (RT − IMDb)")
 
 # Compute rating gap per movie
 df["rating_gap"] = df["rt_score_norm"] - df["imdb_rating_norm"]
 
-# Aggregate: average gap per primary genre (like in the notebook)
+# Aggregate: average gap per primary genre 
 gap_df = (
     df.groupby("primary_genre", as_index=False)["rating_gap"]
       .mean()
@@ -130,10 +125,7 @@ This bar chart summarizes the **average critic–audience disagreement per genre
 
 
 
-# ---------------------------
-# CHART 3: BUDGET vs RT SCORE
-# ---------------------------
-
+# BUDGET vs RT SCORE
 
 st.subheader("Budget vs Rotten Tomatoes Critic Score")
 
@@ -179,9 +171,3 @@ were removed to avoid distortion in the log scale.
 - In this curated dataset, there is **no strong relationship** between budget and critic score.
 """)
 
-
-
-# ---------------------------
-# FOOTER
-# ---------------------------
-st.write("App built as part of CS598 Course Project – Data Curation Workflow.")

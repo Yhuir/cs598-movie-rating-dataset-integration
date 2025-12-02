@@ -2,7 +2,15 @@ import pandas as pd
 from pathlib import Path
 
 def to_percent(x):
-    """Convert strings like '83%' or 8.3 into 0–100 scale."""
+    """
+    Convert strings like '83%' or 8.3 into 0–100 scale.
+    
+    Args:
+        x: Input value (str or float)
+    Returns:
+        float: Normalized percentage score or None
+    
+    """
     if pd.isna(x):
         return None
     if isinstance(x, str) and "%" in x:
@@ -15,7 +23,15 @@ def to_percent(x):
 
 
 def extract_rt_score(row):
-    """Extract Rotten Tomatoes critic score from OMDb Ratings list."""
+    """
+    Extract Rotten Tomatoes critic score from OMDb Ratings list.
+    
+    Args:
+        row: DataFrame row with 'Ratings' column.
+    Returns:
+        float: Rotten Tomatoes score in percent or None
+    
+    """
     if "Ratings" not in row or pd.isna(row["Ratings"]):
         return None
     try:
@@ -48,22 +64,22 @@ def main():
 
     print(f"After merge: {merged.shape[0]} rows, {merged.shape[1]} columns")
 
-    # --- Normalize IMDb rating ---
+    # Normalize IMDb rating 
     if "imdbRating" in merged.columns:
         merged["imdb_rating_norm"] = merged["imdbRating"].apply(to_percent)
     else:
         merged["imdb_rating_norm"] = None
 
-    # --- Normalize Rotten Tomatoes critic score ---
+    # Normalize Rotten Tomatoes critic score
     if "rt_score" in merged.columns:
         merged["rt_score_norm"] = merged["rt_score"].apply(to_percent)
     else:
         merged["rt_score_norm"] = merged.apply(extract_rt_score, axis=1)
 
-    # --- Rating gap ---
+    # Rating gap 
     merged["rating_gap"] = merged["rt_score_norm"] - merged["imdb_rating_norm"]
 
-    # --- Z-scores ---
+    # Z-scores
     for col in ["imdb_rating_norm", "rt_score_norm"]:
         mean = merged[col].mean()
         std = merged[col].std()

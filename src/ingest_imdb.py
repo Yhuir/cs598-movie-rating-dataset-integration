@@ -27,6 +27,15 @@ RATINGS_FILE = "title.ratings.tsv.gz"
 
 
 def download_if_missing(url: str, dest: Path) -> None:
+    """
+    Download a file from a URL to a destination path if it does not already exist.
+    Args:
+        url (str): The URL to download from.
+        dest (Path): The destination file path.
+        
+    Returns:
+        None
+    """
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.exists():
         print(f"✅{dest.name} already exists, skipping download.")
@@ -42,6 +51,13 @@ def download_if_missing(url: str, dest: Path) -> None:
 
 
 def read_tsv_gz(path: Path) -> pd.DataFrame:
+    """
+    Read a gzipped TSV file into a pandas DataFrame.
+    Args:
+        path (Path): The path to the gzipped TSV file.  
+    Returns:
+        pd.DataFrame: The loaded DataFrame.
+    """
     return pd.read_csv(
         path,
         sep="\t",
@@ -51,6 +67,16 @@ def read_tsv_gz(path: Path) -> pd.DataFrame:
 
 
 def title_similarity(a: str, b: str) -> float:
+    """
+    Compute a similarity score between two titles using SequenceMatcher.
+
+    Args:
+        a (str): _description_
+        b (str): _description_
+
+    Returns:
+        float: _description_
+    """
     if pd.isna(a) or pd.isna(b):
         return 0.0
     return SequenceMatcher(None, str(a).lower(), str(b).lower()).ratio()
@@ -72,7 +98,7 @@ def main():
     basics = read_tsv_gz(basics_path)
     ratings = read_tsv_gz(ratings_path)
 
-    # 3. Filter to feature films (tconst type 'movie')
+    # 3. Filter to feature films 
     movies = basics[basics["titleType"] == "movie"].copy()
     movies = movies[["tconst", "primaryTitle", "originalTitle", "startYear", "isAdult", "runtimeMinutes", "genres"]]
 

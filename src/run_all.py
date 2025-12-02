@@ -16,6 +16,13 @@ STEPS = [
 ]
 
 def run_step(label, command):
+    """
+    Run a single step in the pipeline.
+
+    Args:
+        label (_type_): _description_
+        command (_type_): _description_
+    """
     print(f"\n▶ {label}")
     print(f"   Running: {command}")
 
