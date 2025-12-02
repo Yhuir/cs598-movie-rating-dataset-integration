@@ -232,3 +232,6 @@ data/*
 
 data/raw/*
 !data/raw/tmdb_movies_100.csv
+
+reports/*
+!reports/.gitkeep
