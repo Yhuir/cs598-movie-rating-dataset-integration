@@ -241,3 +241,8 @@ data/raw/*
 # -------------------------------
 !data/curated/
 !data/curated/*
+
+data/intermediate/*
+data/curated/movies_with_scores.csv
+data/intermediate/link_candidates.csv
+data/raw/rt_omdb_sample.csv
