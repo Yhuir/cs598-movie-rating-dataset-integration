@@ -206,12 +206,38 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Environment variables
-.env
 
-# Ignore large raw datasets
-data/raw/the-movies-dataset/*
-!data/raw/tmdb_movies_100.csv
+# -------------------------------
+# Ignore environment files
+# -------------------------------
+.venv/
+env/
+*.env
+*.DS_Store
 
-# Ignore IMDb gz files if downloaded later
-data/raw/imdb/*
+# Python caches
+__pycache__/
+*.pyc
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# -------------------------------
+# IMDb dataset should ALWAYS be ignored
+# -------------------------------
+data/raw/imdb/**
+data/raw/imdb/*.tsv.gz
+data/raw/imdb/*.csv
+
+# -------------------------------
+# Ignore all data by default
+# -------------------------------
+
+data/*
+data/raw/*
+
+# -------------------------------
+# Allow curated final dataset
+# -------------------------------
+!data/curated/
+!data/curated/*
