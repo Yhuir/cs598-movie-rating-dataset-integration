@@ -6,22 +6,28 @@ load_dotenv()
 API_KEY = os.getenv("OMDB_API_KEY")
 BASE = "http://www.omdbapi.com/"
 
-def fetch_rating(title):
-    params = {"t": title, "apikey": API_KEY}
-    r = requests.get(BASE, params=params)
-    if r.status_code != 200:
-        return None
-    data = r.json()
-    if data.get("Response") == "False":
-        return None
-    ratings = {r["Source"]: r["Value"] for r in data.get("Ratings", [])}
-    return {
-        "title": data.get("Title"),
-        "year": data.get("Year"),
-        "imdb_rating": data.get("imdbRating"),
-        "rt_score": ratings.get("Rotten Tomatoes"),
-        "metascore": data.get("Metascore")
+def fetch_rating(title, retries=5, delay=2):
+    """Fetch OMDb rating with retry logic."""
+    BASE = "http://www.omdbapi.com/"
+
+    params = {
+        "apikey": API_KEY,
+        "t": title
     }
+
+    for attempt in range(1, retries + 1):
+        try:
+            r = requests.get(BASE, params=params, timeout=10)
+            r.raise_for_status()
+            return r.json()
+        
+        except Exception as e:
+            print(f"OMDb request failed (attempt {attempt}/{retries}): {e}")
+            if attempt < retries:
+                time.sleep(delay)
+            else:
+                print("Max retries reached. Skipping this title.")
+                return None
 
 def main():
     df = pd.read_csv("data/raw/tmdb_movies_100.csv")
@@ -34,7 +40,7 @@ def main():
         time.sleep(0.3)
     out = pd.DataFrame(results)
     out.to_csv("data/raw/rt_omdb_sample.csv", index=False)
-    print("✅ Saved Rotten Tomatoes + IMDb ratings sample.")
+    print("Saved Rotten Tomatoes + IMDb ratings sample.")
 
 if __name__ == "__main__":
     main()

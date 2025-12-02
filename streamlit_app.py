@@ -88,24 +88,32 @@ This scatter plot compares *audience ratings* from IMDb with *critic ratings* fr
 # ---------------------------
 st.subheader("Critic–Audience Rating Gap by Genre (RT − IMDb)")
 
+# Compute rating gap per movie
 df["rating_gap"] = df["rt_score_norm"] - df["imdb_rating_norm"]
 
+# Aggregate: average gap per primary genre (like in the notebook)
+gap_df = (
+    df.groupby("primary_genre", as_index=False)["rating_gap"]
+      .mean()
+      .sort_values("rating_gap")
+)
+
 gap_chart = (
-    alt.Chart(df)
+    alt.Chart(gap_df)
     .mark_bar()
     .encode(
         x=alt.X(
             "rating_gap:Q",
-            title="Rating Difference (Rotten Tomatoes − IMDb, normalized points)"
+            title="Average Rating Difference (Rotten Tomatoes − IMDb, normalized points)"
         ),
         y=alt.Y(
             "primary_genre:N",
-            sort="-x",
+            sort=gap_df["primary_genre"].tolist(),
             title="Primary Genre"
         ),
         tooltip=[
             alt.Tooltip("primary_genre:N", title="Genre"),
-            alt.Tooltip("rating_gap:Q", title="RT − IMDb (points)")
+            alt.Tooltip("rating_gap:Q", title="Avg RT − IMDb (points)")
         ]
     )
 )
@@ -114,11 +122,12 @@ st.altair_chart(gap_chart, use_container_width=True)
 
 st.markdown("""
 **What this chart shows:**  
-This bar chart highlights **which genres show the largest disagreement** between critics and audiences.  
-- Positive values (**RT > IMDb**) mean *critics liked the movies more*.  
-- Negative values (**IMDb > RT**) mean *audiences liked them more*.  
-- Genres near zero show *agreement between critics and audiences*.  
+This bar chart summarizes the **average critic–audience disagreement per genre**.  
+- Positive values (**RT > IMDb**) mean *critics liked that genre more on average*.  
+- Negative values (**IMDb > RT**) mean *audiences liked that genre more*.  
+- Bars near zero indicate general agreement between critics and audiences within that genre.
 """)
+
 
 
 # ---------------------------

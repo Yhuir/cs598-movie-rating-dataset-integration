@@ -29,16 +29,16 @@ RATINGS_FILE = "title.ratings.tsv.gz"
 def download_if_missing(url: str, dest: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.exists():
-        print(f"✅ {dest.name} already exists, skipping download.")
+        print(f"✅{dest.name} already exists, skipping download.")
         return
 
-    print(f"⬇️  Downloading {dest.name} from IMDb...")
+    print(f"Downloading {dest.name} from IMDb...")
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
         with open(dest, "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
-    print(f"✅ Downloaded to {dest}")
+    print(f"✅Downloaded to {dest}")
 
 
 def read_tsv_gz(path: Path) -> pd.DataFrame:
@@ -68,7 +68,7 @@ def main():
     download_if_missing(IMDB_BASE_URL + RATINGS_FILE, ratings_path)
 
     # 2. Load IMDb basics + ratings
-    print("📂 Loading IMDb basics and ratings...")
+    print("Loading IMDb basics and ratings...")
     basics = read_tsv_gz(basics_path)
     ratings = read_tsv_gz(ratings_path)
 
@@ -91,7 +91,7 @@ def main():
 
     imdb_all_out = Path("data/raw/imdb_all_movies.csv")
     movies_ratings.to_csv(imdb_all_out, index=False)
-    print(f"✅ Saved filtered IMDb movie universe: {imdb_all_out} ({len(movies_ratings)} rows)")
+    print(f"✅Saved filtered IMDb movie universe: {imdb_all_out} ({len(movies_ratings)} rows)")
 
     # 4. Link IMDb to TMDb pilot subset by title + year
     tmdb_path = Path("data/raw/tmdb_movies_100.csv")

@@ -19,7 +19,7 @@ def main():
     movies_path = base_path / "movies_metadata.csv"
     credits_path = base_path / "credits.csv"
 
-    print("📂 Loading data...")
+    print("Loading data...")
     movies = pd.read_csv(movies_path, low_memory=False)
     credits = pd.read_csv(credits_path)
 
@@ -59,7 +59,7 @@ def main():
     # --- Save output ---
     output_path = Path("data/raw/tmdb_movies_100.csv")
     merged_sample.to_csv(output_path, index=False)
-    print(f"✅ Saved sample: {output_path} ({len(merged_sample)} rows)")
+    print(f"✅Saved sample: {output_path} ({len(merged_sample)} rows)")
 
 if __name__ == "__main__":
     main()

@@ -1,39 +1,54 @@
 import pandas as pd
-from difflib import SequenceMatcher
-from pathlib import Path
+from rapidfuzz import fuzz, process
 
-def title_similarity(a, b):
-    if pd.isna(a) or pd.isna(b):
-        return 0
-    return SequenceMatcher(None, a.lower(), b.lower()).ratio()
+def detect_title_column(df):
+    """
+    Detect the best possible title column from OMDb data.
+    """
+    possible_cols = ["title", "movie_title", "rt_title", "tmdb_title", "name"]
+    for c in df.columns:
+        if c.lower() in possible_cols:
+            return c
+    raise ValueError(f"No recognizable title column found. Columns: {list(df.columns)}")
 
 def main():
+    # Load TMDb data
     tmdb = pd.read_csv("data/raw/tmdb_movies_100.csv")
+    tmdb["tmdb_title"] = tmdb["title"].astype(str)
+    tmdb["tmdb_year"] = tmdb["release_date"].str[:4]
+
+    # Load OMDb / RT data
     rt = pd.read_csv("data/raw/rt_omdb_sample.csv")
 
-    # optional IMDb later
-    tmdb["release_year"] = tmdb["release_year"].astype(str)
-    rt["year"] = rt["year"].astype(str)
+    # Automatically detect title column
+    rt_title_col = detect_title_column(rt)
+    rt["rt_title"] = rt[rt_title_col].astype(str)
+
+    print(f"Using OMDb title column: {rt_title_col}")
 
     candidates = []
 
-    for _, tm in tmdb.iterrows():
-        # match by same year ±1 and high title similarity
-        matches = rt[rt["year"].astype(str).isin([tm["release_year"], str(int(tm["release_year"]) + 1), str(int(tm["release_year"]) - 1)])]
-        for _, row in matches.iterrows():
-            sim = title_similarity(tm["title"], row["title"])
-            if sim > 0.8:
-                candidates.append({
-                    "tmdb_id": tm["id"],
-                    "tmdb_title": tm["title"],
-                    "rt_title": row["title"],
-                    "rt_year": row["year"],
-                    "similarity": round(sim, 3)
-                })
+    for idx, row in tmdb.iterrows():
+        title_tmdb = row["tmdb_title"]
 
-    link_df = pd.DataFrame(candidates)
-    link_df.to_csv("data/intermediate/link_candidates.csv", index=False)
-    print(f"✅ Found {len(link_df)} candidate matches, saved to data/intermediate/link_candidates.csv")
+        match, score, _ = process.extractOne(
+            title_tmdb,
+            rt["rt_title"],
+            scorer=fuzz.token_sort_ratio
+        )
+
+        candidates.append({
+            "tmdb_id": row["id"],
+            "tmdb_title": title_tmdb,
+            "tmdb_year": row["tmdb_year"],
+            "rt_title": match,
+            "similarity": score
+        })
+
+    df_out = pd.DataFrame(candidates)
+    df_out.to_csv("data/intermediate/link_candidates.csv", index=False)
+
+    print("✅ Saved matches to data/intermediate/link_candidates.csv")
 
 if __name__ == "__main__":
     main()
